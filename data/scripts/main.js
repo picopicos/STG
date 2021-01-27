@@ -44,7 +44,7 @@ function load(){
 
     if(ready === true){
         eventSetting();
-        sStart_time_ms = Date.now();
+        start_time_ms = Date.now();
         render();
     } else {
         setTimeout(load, 100);
@@ -57,7 +57,7 @@ function eventSetting(){
 
 function render(){
     util.drawRect(0, 0, canvas.width, canvas.height, '#eeeeee');
-    let now_time_s = (Date.now() - Start_time_ms) / 1000;
+    let now_time_s = (Date.now() - start_time_ms) / 1000;
 
     player.update();
     requestAnimationFrame(render);
