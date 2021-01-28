@@ -11,7 +11,8 @@ class SceneManager {
     }
 
     use(scene_name){
-        if(this.scene.hasOwnProperty(scene_name)) !== true){
+        if(this.scene.hasOwnProperty(scene_name) !== true){
+            console.log('invalid scene');
             return;
         }
         this.active_scene = this.scene[scene_name];

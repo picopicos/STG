@@ -138,7 +138,6 @@ class Enemy extends Entity{
             this.life = 0;
         }
 
-        this.position.x += this.speed;
         this.position.y += this.speed;
 
         this.draw();

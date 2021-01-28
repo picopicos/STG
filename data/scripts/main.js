@@ -20,6 +20,7 @@ let start_time_ms = null;
 let now_time_s = null;
 let shot_array = [];
 let enemy_array = [];
+let scene = null;
 
 window.addEventListener('load', () => {
     initialize();
@@ -51,6 +52,7 @@ function load(){
         enemy_array[i].setImage('./assets/img/enemy.png');
     }
     player.setShotArray(shot_array);
+    scene = new SceneManager();
 
     // 画像をまとめて参照
     player.setImage('./assets/img/player.png');
@@ -62,7 +64,8 @@ function load(){
     enemy_array.map((v) => {ready === ready && v.ready;});
 
     if(ready === true){
-        eventSetting();
+        setEventSetting();
+        setSceneSetting();
         start_time_ms = Date.now();
         render();
     } else {
@@ -70,13 +73,35 @@ function load(){
     }
 }
 
-function eventSetting(){
+function setEventSetting(){
     window.addEventListener('keydown', (event) => {
         Is_key_down[`key_${event.key}`] = true;
     }, false);
     window.addEventListener('keyup', (event) => {
         Is_key_down[`key_${event.key}`] = false;
     }, false);
+}
+
+function setSceneSetting(){
+    scene.add('intro', (time) => {
+        if(time > 2.0){
+            scene.use('invade');
+        }
+    });
+
+    scene.add('invade', (time) => {
+        // 0フレーム目のみ出現
+        if(scene.frame !== 0){return;}
+        for(let i = 0; i < ENEMY_MAX_COUNT; ++i){
+            if(enemy_array[i].life <= 0){
+                let e = enemy_array[i];
+                e.set(CANVAS_WIDTH / 2, -e.height);
+                break;
+            }
+        }
+    })
+
+    scene.use('intro');
 }
 
 function render(){
@@ -86,6 +111,7 @@ function render(){
     player.update();
     shot_array.map((v) => {v.update();});
     enemy_array.map((v) => {v.update();});
+    scene.update();
 
     requestAnimationFrame(render);
 }
