@@ -49,6 +49,12 @@ class Entity{
         );
     }
 
+}
+
+class Player extends Entity{
+    constructor(ctx, x, y, width, height, life){
+        super(ctx, x, y, width, height, 0);
+    }
     update(){
         if(window.Is_key_down.key_ArrowLeft === true){
             this.position.x -= this.speed;
@@ -66,11 +72,5 @@ class Entity{
         let ty = Math.min(Math.max(this.position.y, 0), this.ctx.stage_height);
         this.position.set(tx, ty);
         this.draw();
-    }
-}
-
-class Player extends Entity{
-    constructor(ctx, x, y, width, height, life){
-        super(ctx, x, y, width, height, 0);
     }
 }
