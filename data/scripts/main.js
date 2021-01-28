@@ -90,17 +90,23 @@ function setSceneSetting(){
     });
 
     scene.add('invade', (time) => {
-        // 0フレーム目のみ出現
-        if(scene.frame !== 0){return;}
-        for(let i = 0; i < ENEMY_MAX_COUNT; ++i){
-            if(enemy_array[i].life <= 0){
-                let e = enemy_array[i];
-                e.set(CANVAS_WIDTH / 2, -e.height);
-                break;
+        if(scene.frame === 0){
+            for(let i = 0; i < ENEMY_MAX_COUNT; ++i){
+                if(enemy_array[i].life <= 0){
+                    let e = enemy_array[i];
+                    e.set(CANVAS_WIDTH / 2, -e.height);
+                    break;
+                }
             }
+        }
+
+        // 経過後,シーンを再利用する
+        if(scene.frame === 100){
+            scene.use('invade');
         }
     })
 
+    // 初期シーンの設定
     scene.use('intro');
 }
 
