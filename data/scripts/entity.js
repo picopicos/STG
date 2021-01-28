@@ -50,7 +50,6 @@ class Entity{
     }
 
     update(){
-        // TODO:移動処理
         if(window.Is_key_down.key_ArrowLeft === true){
             this.position.x -= this.speed;
         }
@@ -63,6 +62,9 @@ class Entity{
         if(window.Is_key_down.key_ArrowDown === true){
             this.position.y += this.speed;
         }
+        let tx = Math.min(Math.max(this.position.x, 0), this.ctx.stage_width);
+        let ty = Math.min(Math.max(this.position.y, 0), this.ctx.stage_height);
+        this.position.set(tx, ty);
         this.draw();
     }
 }

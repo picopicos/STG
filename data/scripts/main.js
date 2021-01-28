@@ -9,6 +9,8 @@ console.log('a');
 window.Is_key_down = {};
 const CANVAS_WIDTH = 960;
 const CANVAS_HEIGHT = 720;
+const STAGE_WIDTH = 960;
+const STAGE_HEIGHT = 720;
 let util = null;
 let canvas = null;
 let ctx = null;
@@ -29,6 +31,8 @@ function initialize(){
 
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT;
+    ctx.stage_width = STAGE_WIDTH;
+    ctx.stage_height = STAGE_HEIGHT;
 }
 
 function load(){
