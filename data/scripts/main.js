@@ -6,8 +6,11 @@ console.log('a');
 'use strict';
 
 // 変数定義
-let CANVAS_WIDTH = 960;
-let CANVAS_HEIGHT = 720;
+window.Is_key_down = {};
+const CANVAS_WIDTH = 960;
+const CANVAS_HEIGHT = 720;
+const STAGE_WIDTH = 960;
+const STAGE_HEIGHT = 720;
 let util = null;
 let canvas = null;
 let ctx = null;
@@ -28,6 +31,8 @@ function initialize(){
 
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT;
+    ctx.stage_width = STAGE_WIDTH;
+    ctx.stage_height = STAGE_HEIGHT;
 }
 
 function load(){
@@ -40,7 +45,7 @@ function load(){
 
     // 読み込みが必要なものをここに置く
     // 例) ready === ready && XXX.ready
-    ready === ready && Player.ready;
+    ready === ready && player.ready;
 
     if(ready === true){
         eventSetting();
@@ -52,7 +57,12 @@ function load(){
 }
 
 function eventSetting(){
-
+    window.addEventListener('keydown', (event) => {
+        Is_key_down[`key_${event.key}`] = true;
+    }, false);
+    window.addEventListener('keyup', (event) => {
+        Is_key_down[`key_${event.key}`] = false;
+    }, false);
 }
 
 function render(){
@@ -60,6 +70,7 @@ function render(){
     let now_time_s = (Date.now() - start_time_ms) / 1000;
 
     player.update();
+
     requestAnimationFrame(render);
 }
 
