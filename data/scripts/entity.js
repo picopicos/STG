@@ -54,6 +54,12 @@ class Entity{
 class Player extends Entity{
     constructor(ctx, x, y, width, height, life){
         super(ctx, x, y, width, height, 0);
+
+        // ショットの弾１つ１つは配列に割り当てられる
+        this.shotArray = null;
+    }
+    setShotArray(shotArray){
+        this.shotArray = shotArray;
     }
     update(){
         if(window.Is_key_down.key_ArrowLeft === true){
@@ -72,22 +78,32 @@ class Player extends Entity{
         let ty = Math.min(Math.max(this.position.y, 0), this.ctx.stage_height);
         this.position.set(tx, ty);
         this.draw();
+
+        // 生成可能なショットを走査し１つずつ生成する
+        if(window.Is_key_down.key_z === true){
+            for(let i = 0; i < this.shotArray.length; i++){
+                if(this.shotArray[i].life <= 0){
+                    this.shotArray[i].generate(this.position.x, this.position.y);
+                    break;
+                }
+            }
+        }
     }
 }
 
 class Shot extends Entity{
     constructor(ctx, x, y, width, height){
-        super(ctx, x, y, width, height);
+        super(ctx, x, y, width, height, 0);
         this.speed = 10;
     }
 
     generate(x, y){
         this.position.set(x, y);
-        this.is_live = true;
+        this.life = true;
     }
 
     update(){
-        if(this.is_live === false){return;}
+        if(this.life <= 0){return;}
         if(this.position.y + this.height < 0){
             this.life = 0;
         }

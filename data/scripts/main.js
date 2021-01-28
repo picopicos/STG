@@ -10,12 +10,14 @@ const CANVAS_WIDTH = 960;
 const CANVAS_HEIGHT = 720;
 const STAGE_WIDTH = 960;
 const STAGE_HEIGHT = 720;
+const SHOT_MAX_COUNT = 10;
 let util = null;
 let canvas = null;
 let ctx = null;
 let player = null;
 let start_time_ms = null;
 let now_time_s = null;
+let shotArray = [];
 
 window.addEventListener('load', () => {
     initialize();
@@ -38,6 +40,11 @@ function load(){
     let ready = true;
 
     player = new Player(ctx, 0, 0, 64, 64);
+    for(let i = 0; i < SHOT_MAX_COUNT; i++){
+        shotArray[i] = new Shot(ctx, 0, 0, 32, 32);
+        shotArray[i].setImage('./assets/img/shot.png');
+    }
+    player.setShotArray(shotArray);
 
     // 画像をまとめて参照
     player.setImage('./assets/img/player.png');
@@ -45,6 +52,9 @@ function load(){
     // 読み込みが必要なものをここに置く
     // 例) ready === ready && XXX.ready
     ready === ready && player.ready;
+    shotArray.map((v) => {
+        ready === ready && v.ready;
+    });
 
     if(ready === true){
         eventSetting();
@@ -69,6 +79,10 @@ function render(){
     let now_time_s = (Date.now() - start_time_ms) / 1000;
 
     player.update();
+
+    shotArray.map((v) => {
+        v.update();
+    });
 
     requestAnimationFrame(render);
 }
