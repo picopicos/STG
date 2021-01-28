@@ -57,10 +57,15 @@ class Player extends Entity{
 
         // ショットの弾１つ１つは配列に割り当てられる
         this.shotArray = null;
+
+        this.shot_check_counter = 0;
+        this.shot_cool_time = 10;
     }
+
     setShotArray(shotArray){
         this.shotArray = shotArray;
     }
+
     update(){
         if(window.Is_key_down.key_ArrowLeft === true){
             this.position.x -= this.speed;
@@ -79,15 +84,21 @@ class Player extends Entity{
         this.position.set(tx, ty);
         this.draw();
 
-        // 生成可能なショットを走査し１つずつ生成する
+
+        // 生成可能なショット(最大数＆クールタイム条件)を走査し１つずつ生成する
         if(window.Is_key_down.key_z === true){
-            for(let i = 0; i < this.shotArray.length; i++){
-                if(this.shotArray[i].life <= 0){
-                    this.shotArray[i].generate(this.position.x, this.position.y);
-                    break;
+            if(this.shot_check_counter >= 0){
+                for(let i = 0; i < this.shotArray.length; i++){
+                    if(this.shotArray[i].life <= 0){
+                        this.shotArray[i].generate(this.position.x, this.position.y);
+                        this.shot_check_counter = -this.shot_cool_time;
+                        break;
+                    }
                 }
             }
         }
+        this.shot_check_counter++;
+
     }
 }
 
