@@ -74,3 +74,25 @@ class Player extends Entity{
         this.draw();
     }
 }
+
+class Shot extends Entity{
+    constructor(ctx, x, y, width, height){
+        super(ctx, x, y, width, height);
+        this.speed = 10;
+    }
+
+    generate(x, y){
+        this.position.set(x, y);
+        this.is_live = true;
+    }
+
+    update(){
+        if(this.is_live === false){return;}
+        if(this.position.y + this.height < 0){
+            this.life = 0;
+        }
+
+        this.position.y -= this.speed;
+        this.draw();
+    }
+}
