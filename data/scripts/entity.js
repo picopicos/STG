@@ -18,7 +18,7 @@ class Entity{
         this.position = new Position(x,y);
         this.width = width;
         this.height = height;
-        this.life = life;
+        this.life = life;  // エンティティの生存フラグ(0で削除、1以上で出現)
         this.speed = 1.5;
 
         this.image = new Image();
@@ -26,8 +26,7 @@ class Entity{
         this.image.addEventListener('load', () => {
             this.ready = true;
         }, false);
-        // ロードミスを防ぐデバッグ用画像（後に消去）
-        this.image.src = './image/test.png';
+        this.image.src = './image/test.png';  // ロードミスを防ぐデバッグ用画像（後に消去）
 
         this.angle = 270 * Math.PI / 180;
     }
@@ -55,9 +54,7 @@ class Player extends Entity{
     constructor(ctx, x, y, width, height, life){
         super(ctx, x, y, width, height, 0);
 
-        // ショットの弾１つ１つは配列に割り当てられる
-        this.shotArray = null;
-
+        this.shotArray = null;  // ショットの弾１つ１つは配列に割り当てられる
         this.shot_check_counter = 0;
         this.shot_cool_time = 10;
     }
@@ -120,6 +117,30 @@ class Shot extends Entity{
         }
 
         this.position.y -= this.speed;
+        this.draw();
+    }
+}
+
+class Enemy extends Entity{
+    constructor(ctx, x, y, width, height){
+        super(ctx, x, y, width, height, 0);
+        this.speed = 3;
+    }
+
+    set(x, y, life = 1){
+        this.position.set(x,y);
+        this.life = life;
+    }
+
+    update(){
+        if(this.life <= 0){return;}
+        if(this.position.y - this.height > this.ctx.canvas.height){
+            this.life = 0;
+        }
+
+        this.position.x += this.speed;
+        this.position.y += this.speed;
+
         this.draw();
     }
 }
