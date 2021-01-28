@@ -21,6 +21,7 @@ class Entity{
         this.life = life;
 
         this.image = new Image();
+        this.ready = false;
         this.image.addEventListener('load', () => {
             this.ready = true;
         }, false);
@@ -30,6 +31,7 @@ class Entity{
         this.angle = 270 * Math.PI / 180;
     }
 
+    // 画像の一括参照用
     setImage(imagePath){
         this.image.src = imagePath;
     }
@@ -48,6 +50,10 @@ class Entity{
 
     update(){
         // TODO:移動処理
+        if(window.Is_key_down.key_ArrowLeft === true){
+
+            this.position.x++;
+        }
         this.draw();
     }
 }
