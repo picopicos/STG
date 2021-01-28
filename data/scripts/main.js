@@ -11,13 +11,15 @@ const CANVAS_HEIGHT = 720;
 const STAGE_WIDTH = 960;
 const STAGE_HEIGHT = 720;
 const SHOT_MAX_COUNT = 10;
+const ENEMY_MAX_COUNT = 10;
 let util = null;
 let canvas = null;
 let ctx = null;
 let player = null;
 let start_time_ms = null;
 let now_time_s = null;
-let shotArray = [];
+let shot_array = [];
+let enemy_array = [];
 
 window.addEventListener('load', () => {
     initialize();
@@ -41,10 +43,14 @@ function load(){
 
     player = new Player(ctx, 0, 0, 64, 64);
     for(let i = 0; i < SHOT_MAX_COUNT; i++){
-        shotArray[i] = new Shot(ctx, 0, 0, 32, 32);
-        shotArray[i].setImage('./assets/img/shot.png');
+        shot_array[i] = new Shot(ctx, 0, 0, 32, 32);
+        shot_array[i].setImage('./assets/img/shot.png');
     }
-    player.setShotArray(shotArray);
+    for(let i = 0; i < ENEMY_MAX_COUNT; i++){
+        enemy_array[i] = new Enemy(ctx, 0, 0, 48, 48);
+        enemy_array[i].setImage('./assets/img/enemy.png');
+    }
+    player.setShotArray(shot_array);
 
     // 画像をまとめて参照
     player.setImage('./assets/img/player.png');
@@ -52,9 +58,8 @@ function load(){
     // 読み込みが必要なものをここに置く
     // 例) ready === ready && XXX.ready
     ready === ready && player.ready;
-    shotArray.map((v) => {
-        ready === ready && v.ready;
-    });
+    shot_array.map((v) => {ready === ready && v.ready;});
+    enemy_array.map((v) => {ready === ready && v.ready;});
 
     if(ready === true){
         eventSetting();
@@ -79,10 +84,8 @@ function render(){
     let now_time_s = (Date.now() - start_time_ms) / 1000;
 
     player.update();
-
-    shotArray.map((v) => {
-        v.update();
-    });
+    shot_array.map((v) => {v.update();});
+    enemy_array.map((v) => {v.update();});
 
     requestAnimationFrame(render);
 }
