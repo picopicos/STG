@@ -12,6 +12,7 @@ const STAGE_WIDTH = 960;
 const STAGE_HEIGHT = 720;
 const SHOT_MAX_COUNT = 10;
 const ENEMY_MAX_COUNT = 10;
+const ENEMY_SHOT_MAX_COUNT = 50;
 let util = null;
 let canvas = null;
 let ctx = null;
@@ -20,6 +21,7 @@ let start_time_ms = null;
 let now_time_s = null;
 let shot_array = [];
 let enemy_array = [];
+let enemy_shot_array = [];
 let scene = null;
 
 window.addEventListener('load', () => {
@@ -47,9 +49,15 @@ function load(){
         shot_array[i] = new Shot(ctx, 0, 0, 32, 32);
         shot_array[i].setImage('./assets/img/shot.png');
     }
+    for(let i = 0; i < ENEMY_SHOT_MAX_COUNT; i++){
+        enemy_shot_array[i] = new Shot(ctx, 0, 0, 14, 14);
+        enemy_shot_array[i].setImage('./assets/img/enemy_shot.png');
+    }
     for(let i = 0; i < ENEMY_MAX_COUNT; i++){
         enemy_array[i] = new Enemy(ctx, 0, 0, 48, 48);
         enemy_array[i].setImage('./assets/img/enemy.png');
+        // enemy_shot_arrayは敵の種類に関わらず同じものを利用する
+        enemy_array[i].setShotArray(enemy_shot_array);
     }
     player.setShotArray(shot_array);
     scene = new SceneManager();
@@ -60,8 +68,9 @@ function load(){
     // 読み込みが必要なものをここに置く
     // 例) ready === ready && XXX.ready
     ready === ready && player.ready;
-    shot_array.map((v) => {ready === ready && v.ready;});
-    enemy_array.map((v) => {ready === ready && v.ready;});
+    shot_array.map((v)       => {ready === ready && v.ready;});
+    enemy_array.map((v)      => {ready === ready && v.ready;});
+    enemy_shot_array.map((v) => {ready === ready && v.ready;});
 
     if(ready === true){
         setEventSetting();
@@ -115,8 +124,9 @@ function render(){
     let now_time_s = (Date.now() - start_time_ms) / 1000;
 
     player.update();
-    shot_array.map((v) => {v.update();});
-    enemy_array.map((v) => {v.update();});
+    shot_array.map((v)       => {v.update();});
+    enemy_array.map((v)      => {v.update();});
+    enemy_shot_array.map((v) => {v.update();});
     scene.update();
 
     requestAnimationFrame(render);
