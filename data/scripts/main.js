@@ -6,29 +6,35 @@
 
 // 変数定義
 window.Is_key_down         = {};
+
 const CANVAS_WIDTH         = 960;
 const CANVAS_HEIGHT        = 720;
 const STAGE_WIDTH          = 960;
 const STAGE_HEIGHT         = 720;
-const SHOT_MAX_COUNT       = 10;
-const ENEMY_MAX_COUNT      = 10;
-const ENEMY_SHOT_MAX_COUNT = 50;
+
 let util                   = null;
 let canvas                 = null;
 let ctx                    = null;
-let player                 = null;
+
 let start_time_ms          = null;
 let now_time_s             = null;
+let scene                  = null;
+
+let player                 = null;
 let shot_array             = [];
 let enemy_array            = [];
 let enemy_shot_array       = [];
-let scene                  = null;
+const SHOT_MAX_COUNT       = 10;
+const ENEMY_MAX_COUNT      = 10;
+const ENEMY_SHOT_MAX_COUNT = 50;
 
 window.addEventListener('load', () => {
     initialize();
     load();
 }, false);
 
+// 関数定義
+// canvas利用に必要な初期設定
 function initialize(){
     // utilityへの参照を省略
     util             = new Canvas2DUtility(document.body.querySelector('#main-canvas'));
@@ -41,6 +47,7 @@ function initialize(){
     ctx.stage_height = STAGE_HEIGHT;
 }
 
+// データのロードから描画まですべて実行
 function load(){
     let ready = true;
 
@@ -48,6 +55,7 @@ function load(){
     for(let i = 0; i < SHOT_MAX_COUNT; i++){
         shot_array[i] = new Shot(ctx, 0, 0, 32, 32);
         shot_array[i].setImage('./assets/img/shot_lv1.png');
+        shot_array[i].setTargets(enemy_array);
     }
     for(let i = 0; i < ENEMY_SHOT_MAX_COUNT; i++){
         enemy_shot_array[i] = new Shot(ctx, 0, 0, 14, 14);
@@ -58,6 +66,9 @@ function load(){
         enemy_array[i].setImage('./assets/img/enemy.png');
         // enemy_shot_arrayは敵の種類に関わらず同じものを利用する
         enemy_array[i].setShotArray(enemy_shot_array);
+    }
+    for(let i = 0; i < SHOT_MAX_COUNT; i++){
+        shot_array[i].setTargets(enemy_array);
     }
     player.setShotArray(shot_array);
     scene = new SceneManager();
@@ -103,7 +114,7 @@ function setSceneSetting(){
             for(let i = 0; i < ENEMY_MAX_COUNT; ++i){
                 if(enemy_array[i].life <= 0){
                     enemy_array[i].setDirectionVector(0.0, 1.0);
-                    enemy_array[i].set(CANVAS_WIDTH / 4, -enemy_array[i].height);
+                    enemy_array[i].set(CANVAS_WIDTH / 4, -enemy_array[i].height, 4, 'default');
                     break;
                 }
             }

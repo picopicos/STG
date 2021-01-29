@@ -20,19 +20,21 @@ class Position{
 class Entity{
     constructor(ctx, x, y, width, height, life){
         this.ctx       = ctx;
+        this.image     = new Image();
+        this.image.src = null;
+        this.ready     = false;
+        this.image.addEventListener('load', () => {
+            this.ready = true;
+        }, false);
+
         this.width     = width;
         this.height    = height;
         this.position  = new Position(x,y);
         this.direction_vector = new Position(0.0, -1.0);
         this.angle     = 0.5 * Math.PI;  // 右を0ラジアンとする。
+
         this.speed_dpf = 1.5;
         this.life      = life;  // エンティティの生存フラグ(0で削除、1以上で出現)
-        this.image     = new Image();
-        this.ready     = false;
-        this.image.addEventListener('load', () => {
-            this.ready = true;
-        }, false);
-        this.image.src = './image/test.png';  // ロードミスを防ぐデバッグ用画像（後に消去）
     }
 
     setDirectionVector(x, y){
@@ -53,8 +55,8 @@ class Entity{
     }
 
     // 画像の一括参照用
-    setImage(imagePath){
-        this.image.src = imagePath;
+    setImage(image_path){
+        this.image.src = image_path;
     }
 
     draw(){
@@ -149,16 +151,37 @@ class Shot extends Entity{
         this.life = true;
     }
 
+    setAttack(attack){
+        if(attack != null && attack > 0){
+            this.attack = attack;
+        }
+    }
+
+    setTargets(targets){
+        if(targets != null && Array.isArray(targets) === true && targets.length > 0){
+            this.target_array = targets;
+        }
+    }
+
     update(){
         if(this.life <= 0){return;}
-        if(this.position.y + this.height < 0){
+        if(this.position.y + this.height < 0 || this.position.y - this.height > this.ctx.canvas.height){
             this.life = 0;
         }
 
         this.position.x += this.direction_vector.x * this.speed_dpf;
         this.position.y += this.direction_vector.y * this.speed_dpf;
 
-        this.draw();
+        this.target_array.map((v) => {
+            if(this.life <= 0 || v.life <= 0){return;}
+            let dist = this.position.distance(v.position);
+            if(dist <= (this.width + v.width) / 4){
+                v.life -= this.attack;
+                this.life = 0;
+            }
+        })
+
+        this.rotationDraw();
     }
 }
 
