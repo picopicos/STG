@@ -19,7 +19,7 @@ class Entity{
         this.height = height;
         this.position = new Position(x,y);
         this.direction_vector = new Position(0.0, -1.0);
-        this.angle = 270 * Math.PI / 180;
+        this.angle = 0.5 * Math.PI;
         this.speed = 1.5;
         this.life = life;  // エンティティの生存フラグ(0で削除、1以上で出現)
 
@@ -29,11 +29,17 @@ class Entity{
             this.ready = true;
         }, false);
         this.image.src = './image/test.png';  // ロードミスを防ぐデバッグ用画像（後に消去）
-
     }
 
     setDirectionVector(x, y){
         this.direction_vector.set(x, y);
+    }
+
+    setDirectionVectorFromAngle(angle){
+        this.angle = angle;
+        let sin = Math.sin(angle);
+        let cos = Math.sin(angle);
+        this.direction_vector.set(cos, sin);
     }
 
     // 画像の一括参照用
@@ -53,6 +59,24 @@ class Entity{
         );
     }
 
+    rotationDraw(){
+        this.ctx.save();
+
+        this.ctx.translate(this.position.x, this.position.y);
+        this.ctx.rotate(0.5 * Math.PI - this.angle);
+
+        let offsetX = this.width / 2;
+        let offsetY = this.height / 2;
+        this.ctx.drawImage(
+            this.image,
+            -offsetX,
+            -offsetY,
+            this.width,
+            this.height
+        );
+
+        this.ctx.restore();
+    }
 }
 
 class Player extends Entity{
@@ -84,7 +108,7 @@ class Player extends Entity{
         let tx = Math.min(Math.max(this.position.x, 0), this.ctx.stage_width);
         let ty = Math.min(Math.max(this.position.y, 0), this.ctx.stage_height);
         this.position.set(tx, ty);
-        this.draw();
+        this.rotationDraw();
 
 
         // 生成可能なショット(最大数＆クールタイム条件)を走査し１つずつ生成する
