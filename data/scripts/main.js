@@ -90,7 +90,7 @@ function setSceneSetting(){
     });
 
     scene.add('invade', (time) => {
-        if(scene.frame === 0){
+        if(scene.run_frame === 0){
             for(let i = 0; i < ENEMY_MAX_COUNT; ++i){
                 if(enemy_array[i].life <= 0){
                     let e = enemy_array[i];
@@ -101,7 +101,7 @@ function setSceneSetting(){
         }
 
         // 経過後,シーンを再利用する
-        if(scene.frame === 100){
+        if(scene.run_frame === 100){
             scene.use('invade');
         }
     })
