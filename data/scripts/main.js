@@ -47,14 +47,14 @@ function load(){
     player = new Player(ctx, 0, 0, 64, 64);
     for(let i = 0; i < SHOT_MAX_COUNT; i++){
         shot_array[i] = new Shot(ctx, 0, 0, 32, 32);
-        shot_array[i].setImage('./assets/img/shot.png');
+        shot_array[i].setImage('./assets/img/shot_lv1.png');
     }
     for(let i = 0; i < ENEMY_SHOT_MAX_COUNT; i++){
         enemy_shot_array[i] = new Shot(ctx, 0, 0, 14, 14);
         enemy_shot_array[i].setImage('./assets/img/enemy_shot.png');
     }
     for(let i = 0; i < ENEMY_MAX_COUNT; i++){
-        enemy_array[i] = new Enemy(ctx, 0, 0, 48, 48);
+        enemy_array[i] = new Enemy(ctx, 0, 0, 64, 64);
         enemy_array[i].setImage('./assets/img/enemy.png');
         // enemy_shot_arrayは敵の種類に関わらず同じものを利用する
         enemy_array[i].setShotArray(enemy_shot_array);
@@ -103,14 +103,14 @@ function setSceneSetting(){
             for(let i = 0; i < ENEMY_MAX_COUNT; ++i){
                 if(enemy_array[i].life <= 0){
                     enemy_array[i].setDirectionVector(0.0, 1.0);
-                    enemy_array[i].set(CANVAS_WIDTH / 2, -enemy_array[i].height);
+                    enemy_array[i].set(CANVAS_WIDTH / 4, -enemy_array[i].height);
                     break;
                 }
             }
         }
 
         // 経過後,シーンを再利用する
-        if(scene.run_frame === 100){
+        if(scene.run_frame === 180){
             scene.use('invade');
         }
     })
@@ -120,7 +120,7 @@ function setSceneSetting(){
 }
 
 function render(){
-    util.drawRect(0, 0, canvas.width, canvas.height, '#eeeeee');
+    util.drawRect(0, 0, canvas.width, canvas.height, '#2982A3');
     let now_time_s = (Date.now() - start_time_ms) / 1000;
 
     player.update();

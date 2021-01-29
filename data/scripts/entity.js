@@ -88,6 +88,7 @@ class Entity{
 class Player extends Entity{
     constructor(ctx, x, y, width, height, life){
         super(ctx, x, y, width, height, 0);
+        this.position.set(this.ctx.stage_width / 2, this.ctx.stage_height - 2 * height)
 
         this.shot_array = null;  // ショットの弾１つ１つは配列に割り当てられる
         this.shot_check_counter = 0;
@@ -163,8 +164,9 @@ class Enemy extends Entity{
         super(ctx, x, y, width, height, 0);
         this.type = 'default';
         this.frame = 0;
-        this.speed_dpf = 3;
+        this.speed_dpf = 1;
         this.shot_array = null;
+        this.angle = 1.5 * Math.PI;
     }
 
     set(x, y, life = 1, type = 'default'){
@@ -184,7 +186,7 @@ class Enemy extends Entity{
         for(let i = 0; i < this.shot_array.length; i++){
             if(this.shot_array[i].life <= 0){
                 this.shot_array[i].set(this.position.x, this.position.y);
-                this.shot_array[i].setSpeed(5.0);
+                this.shot_array[i].setSpeed(2.0);
                 this.shot_array[i].setDirectionVector(x, y);
                 break;
             }
@@ -209,7 +211,7 @@ class Enemy extends Entity{
             break;
         }
 
-        this.draw();
+        this.rotationDraw();
         this.frame++;
     }
 }
