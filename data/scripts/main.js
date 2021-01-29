@@ -5,24 +5,24 @@
 'use strict';
 
 // 変数定義
-window.Is_key_down = {};
-const CANVAS_WIDTH = 960;
-const CANVAS_HEIGHT = 720;
-const STAGE_WIDTH = 960;
-const STAGE_HEIGHT = 720;
-const SHOT_MAX_COUNT = 10;
-const ENEMY_MAX_COUNT = 10;
+window.Is_key_down         = {};
+const CANVAS_WIDTH         = 960;
+const CANVAS_HEIGHT        = 720;
+const STAGE_WIDTH          = 960;
+const STAGE_HEIGHT         = 720;
+const SHOT_MAX_COUNT       = 10;
+const ENEMY_MAX_COUNT      = 10;
 const ENEMY_SHOT_MAX_COUNT = 50;
-let util = null;
-let canvas = null;
-let ctx = null;
-let player = null;
-let start_time_ms = null;
-let now_time_s = null;
-let shot_array = [];
-let enemy_array = [];
-let enemy_shot_array = [];
-let scene = null;
+let util                   = null;
+let canvas                 = null;
+let ctx                    = null;
+let player                 = null;
+let start_time_ms          = null;
+let now_time_s             = null;
+let shot_array             = [];
+let enemy_array            = [];
+let enemy_shot_array       = [];
+let scene                  = null;
 
 window.addEventListener('load', () => {
     initialize();
@@ -31,13 +31,13 @@ window.addEventListener('load', () => {
 
 function initialize(){
     // utilityへの参照を省略
-    util = new Canvas2DUtility(document.body.querySelector('#main-canvas'));
-    canvas = util.canvas;
-    ctx = util.context;
+    util             = new Canvas2DUtility(document.body.querySelector('#main-canvas'));
+    canvas           = util.canvas;
+    ctx              = util.context;
 
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
-    ctx.stage_width = STAGE_WIDTH;
+    canvas.width     = CANVAS_WIDTH;
+    canvas.height    = CANVAS_HEIGHT;
+    ctx.stage_width  = STAGE_WIDTH;
     ctx.stage_height = STAGE_HEIGHT;
 }
 

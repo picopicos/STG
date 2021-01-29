@@ -1,9 +1,9 @@
 class SceneManager {
     constructor(){
-        this.scene = {};
-        this.active_scene = null;
+        this.scene         = {};
+        this.active_scene  = null;
         this.start_time_ms = null;
-        this.run_frame = null;
+        this.run_frame     = null;
     }
 
     add(scene_name, scene_function){
@@ -15,9 +15,9 @@ class SceneManager {
             console.log('invalid scene');
             return;
         }
-        this.active_scene = this.scene[scene_name];
+        this.active_scene  = this.scene[scene_name];
         this.start_time_ms = Date.now();
-        this.run_frame = -1;
+        this.run_frame     = -1;
     }
 
     // 毎フレーム、シーン経過時間(秒)をactive_sceneに渡す

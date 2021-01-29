@@ -10,21 +10,25 @@ class Position{
         if(x !== null){this.x = x;}
         if(y !== null){this.y = y;}
     }
+    distance(target){
+        let x = this.x - target.x;
+        let y = this.y - target.y;
+        return Math.sqrt(x * x + y * y);
+    }
 }
 
 class Entity{
     constructor(ctx, x, y, width, height, life){
-        this.ctx = ctx;
-        this.width = width;
-        this.height = height;
-        this.position = new Position(x,y);
+        this.ctx       = ctx;
+        this.width     = width;
+        this.height    = height;
+        this.position  = new Position(x,y);
         this.direction_vector = new Position(0.0, -1.0);
-        this.angle = 0.5 * Math.PI;  // 右を0ラジアンとする。
+        this.angle     = 0.5 * Math.PI;  // 右を0ラジアンとする。
         this.speed_dpf = 1.5;
-        this.life = life;  // エンティティの生存フラグ(0で削除、1以上で出現)
-
-        this.image = new Image();
-        this.ready = false;
+        this.life      = life;  // エンティティの生存フラグ(0で削除、1以上で出現)
+        this.image     = new Image();
+        this.ready     = false;
         this.image.addEventListener('load', () => {
             this.ready = true;
         }, false);
@@ -37,8 +41,8 @@ class Entity{
 
     setDirectionVectorFromAngle(angle){
         this.angle = angle;
-        let sin = Math.sin(angle);
-        let cos = Math.sin(angle);
+        let sin    = Math.sin(angle);
+        let cos    = Math.sin(angle);
         this.direction_vector.set(cos, sin);
     }
 
@@ -67,10 +71,8 @@ class Entity{
 
     rotationDraw(){
         this.ctx.save();
-
         this.ctx.translate(this.position.x, this.position.y);
         this.ctx.rotate(0.5 * Math.PI - this.angle);
-
         let offsetX = this.width / 2;
         let offsetY = this.height / 2;
         this.ctx.drawImage(
@@ -80,7 +82,6 @@ class Entity{
             this.width,
             this.height
         );
-
         this.ctx.restore();
     }
 }
@@ -138,7 +139,9 @@ class Player extends Entity{
 class Shot extends Entity{
     constructor(ctx, x, y, width, height){
         super(ctx, x, y, width, height, 0);
-        this.speed_dpf = 10;
+        this.speed_dpf    = 10;
+        this.attack       = 1;
+        this.target_array = []; // 衝突判定の対象(Characterクラス)
     }
 
     set(x, y){
@@ -162,24 +165,21 @@ class Shot extends Entity{
 class Enemy extends Entity{
     constructor(ctx, x, y, width, height){
         super(ctx, x, y, width, height, 0);
-        this.type = 'default';
-        this.frame = 0;
-        this.speed_dpf = 1;
+        this.type       = 'default';
+        this.frame      = 0;
+        this.speed_dpf  = 1;
         this.shot_array = null;
-        this.angle = 1.5 * Math.PI;
+        this.angle      = 1.5 * Math.PI;
     }
-
     set(x, y, life = 1, type = 'default'){
         this.position.set(x,y);
-        this.life = life;
-        this.type = type;
-        this.frame = 0;
+        this.life       = life;
+        this.type       = type;
+        this.frame      = 0;
     }
-
     setShotArray(shot_array){
         this.shot_array = shot_array;
     }
-
     fire(x = 0.0, y = 1.0){
         console.log(this.shot_array.length);
         // 生成可能なショット(最大数)を走査し１つずつ生成する
@@ -191,16 +191,13 @@ class Enemy extends Entity{
                 break;
             }
         }
-
     }
-
     update(){
         if(this.life <= 0){return;}
-
         switch(this.type){
             case 'default':
             default:
-            if(this.frame === 50){
+            if(this.frame === 150){
                 this.fire();
             }
             this.position.x += this.direction_vector.x * this.speed_dpf;
@@ -210,7 +207,6 @@ class Enemy extends Entity{
             }
             break;
         }
-
         this.rotationDraw();
         this.frame++;
     }
