@@ -3,11 +3,11 @@ class SceneManager {
         this.scene = {};
         this.active_scene = null;
         this.start_time_ms = null;
-        this.frame = null;
+        this.run_frame = null;
     }
 
-    add(scene_name, update_function){
-        this.scene[scene_name] = update_function;
+    add(scene_name, scene_function){
+        this.scene[scene_name] = scene_function;
     }
 
     use(scene_name){
@@ -17,12 +17,13 @@ class SceneManager {
         }
         this.active_scene = this.scene[scene_name];
         this.start_time_ms = Date.now();
-        this.frame = -1;
+        this.run_frame = -1;
     }
 
+    // 毎フレーム、シーン経過時間(秒)をactive_sceneに渡す
     update(){
         let active_time_s = (Date.now() - this.start_time_ms) / 1000;
         this.active_scene(active_time_s);
-        this.frame++;
+        this.run_frame++;
     }
 }

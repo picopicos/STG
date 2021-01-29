@@ -15,11 +15,13 @@ class Position{
 class Entity{
     constructor(ctx, x, y, width, height, life){
         this.ctx = ctx;
-        this.position = new Position(x,y);
         this.width = width;
         this.height = height;
-        this.life = life;  // エンティティの生存フラグ(0で削除、1以上で出現)
+        this.position = new Position(x,y);
+        this.direction_vector = new Position(0.0, -1.0);
+        this.angle = 270 * Math.PI / 180;
         this.speed = 1.5;
+        this.life = life;  // エンティティの生存フラグ(0で削除、1以上で出現)
 
         this.image = new Image();
         this.ready = false;
@@ -28,7 +30,10 @@ class Entity{
         }, false);
         this.image.src = './image/test.png';  // ロードミスを防ぐデバッグ用画像（後に消去）
 
-        this.angle = 270 * Math.PI / 180;
+    }
+
+    setDirectionVector(direction_vector){
+        this.direction_vector = direction_vector;
     }
 
     // 画像の一括参照用
