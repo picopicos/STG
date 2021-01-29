@@ -32,8 +32,8 @@ class Entity{
 
     }
 
-    setDirectionVector(direction_vector){
-        this.direction_vector = direction_vector;
+    setDirectionVector(x, y){
+        this.direction_vector.set(x, y);
     }
 
     // 画像の一括参照用
@@ -121,7 +121,9 @@ class Shot extends Entity{
             this.life = 0;
         }
 
-        this.position.y -= this.speed;
+        this.position.x += this.direction_vector.x * this.speed;
+        this.position.y += this.direction_vector.y * this.speed;
+
         this.draw();
     }
 }
@@ -142,8 +144,8 @@ class Enemy extends Entity{
         if(this.position.y - this.height > this.ctx.canvas.height){
             this.life = 0;
         }
-
-        this.position.y += this.speed;
+        this.position.x += this.direction_vector.x * this.speed;
+        this.position.y += this.direction_vector.y * this.speed;
 
         this.draw();
     }

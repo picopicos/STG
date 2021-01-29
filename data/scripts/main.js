@@ -93,8 +93,8 @@ function setSceneSetting(){
         if(scene.run_frame === 0){
             for(let i = 0; i < ENEMY_MAX_COUNT; ++i){
                 if(enemy_array[i].life <= 0){
-                    let e = enemy_array[i];
-                    e.set(CANVAS_WIDTH / 2, -e.height);
+                    enemy_array[i].setDirectionVector(0.0, 1.0);
+                    enemy_array[i].set(CANVAS_WIDTH / 2, -enemy_array[i].height);
                     break;
                 }
             }
