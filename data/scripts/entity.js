@@ -18,7 +18,7 @@ class Position{
 }
 
 class Entity{
-    constructor(ctx, x, y, width, height, life){
+    constructor(ctx, x, y, width, height, hitbox = width, life){
         this.ctx       = ctx;
         this.image     = new Image();
         this.image.src = null;
@@ -29,6 +29,7 @@ class Entity{
 
         this.width     = width;
         this.height    = height;
+        this.hitbox    = hitbox;
         this.position  = new Position(x,y);
         this.direction_vector = new Position(0.0, -1.0);
         this.angle     = 0.5 * Math.PI;  // 右を0ラジアンとする。
@@ -89,8 +90,8 @@ class Entity{
 }
 
 class Player extends Entity{
-    constructor(ctx, x, y, width, height, life){
-        super(ctx, x, y, width, height, 0);
+    constructor(ctx, x, y, width, height, hitbox, life){
+        super(ctx, x, y, width, height, hitbox, 0);
         this.position.set(this.ctx.stage_width / 2, this.ctx.stage_height - 2 * height)
 
         this.shot_array = null;  // ショットの弾１つ１つは配列に割り当てられる
@@ -139,11 +140,11 @@ class Player extends Entity{
 }
 
 class Shot extends Entity{
-    constructor(ctx, x, y, width, height){
-        super(ctx, x, y, width, height, 0);
+    constructor(ctx, x, y, width, height, hitbox){
+        super(ctx, x, y, width, height, hitbox, 0);
         this.speed_dpf    = 10;
         this.attack       = 1;
-        this.target_array = []; // 衝突判定の対象(Characterクラス)
+        this.hitbox_target_array = []; // 衝突判定の対象(Characterクラス)
     }
 
     set(x, y){
@@ -157,9 +158,9 @@ class Shot extends Entity{
         }
     }
 
-    setTargets(targets){
+    setHitboxTargets(targets){
         if(targets != null && Array.isArray(targets) === true && targets.length > 0){
-            this.target_array = targets;
+            this.hitbox_target_array = targets;
         }
     }
 
@@ -172,10 +173,10 @@ class Shot extends Entity{
         this.position.x += this.direction_vector.x * this.speed_dpf;
         this.position.y += this.direction_vector.y * this.speed_dpf;
 
-        this.target_array.map((v) => {
+        this.hitbox_target_array.map((v) => {
             if(this.life <= 0 || v.life <= 0){return;}
             let dist = this.position.distance(v.position);
-            if(dist <= (this.width + v.width) / 4){
+            if(dist <= (this.hitbox + v.hitbox) / 4){
                 v.life -= this.attack;
                 this.life = 0;
             }
@@ -186,8 +187,8 @@ class Shot extends Entity{
 }
 
 class Enemy extends Entity{
-    constructor(ctx, x, y, width, height){
-        super(ctx, x, y, width, height, 0);
+    constructor(ctx, x, y, width, height, hitbox){
+        super(ctx, x, y, width, height, hitbox, 0);
         this.type       = 'default';
         this.frame      = 0;
         this.speed_dpf  = 1;
