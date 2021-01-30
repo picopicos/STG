@@ -101,8 +101,10 @@ class Player extends Entity{
         this.position.set(this.ctx.stage_width / 2, this.ctx.stage_height - 2 * height)
 
         this.shot_array = null;  // ショットの弾１つ１つは配列に割り当てられる
-        this.shot_check_counter = 0;
-        this.shot_cool_time = 10;
+        this.shot_check_counter_f = 0;
+        this.shot_cool_time_f = 10;
+        this.invincible_check_counter_f = 0;
+        this.invincible_time_f = 60;
     }
 
     setShotArray(shot_array){
@@ -131,17 +133,18 @@ class Player extends Entity{
 
         // 生成可能なショット(最大数＆クールタイム条件)を走査し１つずつ生成する
         if(window.Is_key_down.key_z === true){
-            if(this.shot_check_counter >= 0){
+            if(this.shot_check_counter_f >= 0){
                 for(let i = 0; i < this.shot_array.length; i++){
                     if(this.shot_array[i].life <= 0){
                         this.shot_array[i].set(this.position.x, this.position.y);
-                        this.shot_check_counter = -this.shot_cool_time;
+                        this.shot_check_counter_f = -this.shot_cool_time_f;
                         break;
                     }
                 }
             }
         }
-        this.shot_check_counter++;
+        this.shot_check_counter_f++;
+        this.invincible_check_counter_f++;
 
     }
 }
@@ -239,10 +242,11 @@ class Enemy extends Entity{
 
         if(this.hitbox_target_array != null){
             this.hitbox_target_array.map((v) => {
-                if(this.life <= 0 || v.life <= 0){return;}
+                if(this.life <= 0 || v.life <= 0 || v.invincible_check_counter_f < 0){return;}
                 let dist = this.position.distance(v.position);
                 if(dist <= (this.hitbox + v.hitbox) / 4){
                     v.life -= this.collision_attack;
+                    v.invincible_check_counter_f = -v.invincible_time_f;
                 }
             })
         }

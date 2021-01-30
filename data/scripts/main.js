@@ -51,7 +51,7 @@ function initialize(){
 function load(){
     let ready = true;
 
-    player = new Player(ctx, 0, 0, 64, 64, 64, 1);
+    player = new Player(ctx, 0, 0, 64, 64, 64, 10);
     for(let i = 0; i < SHOT_MAX_COUNT; i++){
         shot_array[i] = new Shot(ctx, 0, 0, 32, 32);
         shot_array[i].setImage('./assets/img/shot_lv1.png');
