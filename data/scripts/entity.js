@@ -103,8 +103,8 @@ class Player extends Entity{
         this.shot_array = null;  // ショットの弾１つ１つは配列に割り当てられる
         this.shot_check_counter_f = 0;
         this.shot_cool_time_f = 10;
-        this.invincible_check_counter_f = 0;
-        this.invincible_time_f = 60;
+        this.collision_check_counter_f = 0;
+        this.collision_time_f = 60;
     }
 
     setShotArray(shot_array){
@@ -112,7 +112,9 @@ class Player extends Entity{
     }
 
     update(){
-        if(this.life <= 0){return;}
+        if(this.life <= 0){
+            return;
+        }
         if(window.Is_key_down.key_ArrowLeft === true){
             this.position.x -= this.speed_dpf;
         }
@@ -144,7 +146,7 @@ class Player extends Entity{
             }
         }
         this.shot_check_counter_f++;
-        this.invincible_check_counter_f++;
+        this.collision_check_counter_f++;
 
     }
 }
@@ -184,6 +186,17 @@ class Shot extends Entity{
                 let dist = this.position.distance(v.position);
                 if(dist <= (this.hitbox + v.hitbox) / 4){
                     v.life -= this.attack;
+
+                    // 撃破後の処理
+                    if(v.life <= 0){
+                        v.life = 0;
+                        if(v instanceof Enemy === true){
+                            // 99999999は仮のMAX
+                            console.log('aa');
+                            Game_score = Math.min(Game_score + v.score, 99999999);
+                        }
+                    }
+
                     this.life = 0;
                 }
             })
@@ -198,10 +211,16 @@ class Enemy extends Entity{
         super(ctx, x, y, width, height, hitbox, 0);
         this.type       = 'default';
         this.frame      = 0;
-        this.speed_dpf  = 1;
         this.shot_array = null;
         this.angle      = 1.5 * Math.PI;
-        this.collision_attack = 1;
+        this.collision_attack = 3;
+
+        switch(this.type){
+            case 'default' :
+            default:
+            this.speed_dpf  = 1.5;
+            this.score = 100;
+        }
     }
     set(x, y, life = 1, type = 'default'){
         this.position.set(x,y);
@@ -242,11 +261,14 @@ class Enemy extends Entity{
 
         if(this.hitbox_target_array != null){
             this.hitbox_target_array.map((v) => {
-                if(this.life <= 0 || v.life <= 0 || v.invincible_check_counter_f < 0){return;}
+                if(this.life <= 0 || v.life <= 0 || v.collision_check_counter_f < 0){return;}
                 let dist = this.position.distance(v.position);
                 if(dist <= (this.hitbox + v.hitbox) / 4){
                     v.life -= this.collision_attack;
-                    v.invincible_check_counter_f = -v.invincible_time_f;
+                    v.collision_check_counter_f = -v.collision_time_f;
+                    if(v.life <= 0){
+                        v.life = 0;
+                    }
                 }
             })
         }
