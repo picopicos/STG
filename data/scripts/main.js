@@ -6,6 +6,7 @@
 
 /* 変数定義 */
 window.Is_key_down         = {};
+window.Game_score          = 0;
 
 const CANVAS_WIDTH         = 640;
 const CANVAS_HEIGHT        = 720;
@@ -174,6 +175,13 @@ function render(){
     enemy_array.map((v)      => {v.update();});
     enemy_shot_array.map((v) => {v.update();});
     scene.update();
+    ctx.font = 'bold 24px monospace';
+    util.drawText('Score:' + Game_score, 30, 50, 'white');
+    if(player.life > 0){
+        util.drawText('HP:' + player.life, 30, 90, 'white');
+    } else {
+        util.drawText('GAME OVER!!', 30, 90, 'white');
+    }
 
     requestAnimationFrame(render);
 }

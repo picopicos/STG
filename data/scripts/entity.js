@@ -112,7 +112,9 @@ class Player extends Entity{
     }
 
     update(){
-        if(this.life <= 0){return;}
+        if(this.life <= 0){
+            return;
+        }
         if(window.Is_key_down.key_ArrowLeft === true){
             this.position.x -= this.speed_dpf;
         }
@@ -184,6 +186,17 @@ class Shot extends Entity{
                 let dist = this.position.distance(v.position);
                 if(dist <= (this.hitbox + v.hitbox) / 4){
                     v.life -= this.attack;
+
+                    // 撃破後の処理
+                    if(v.life <= 0){
+                        v.life = 0;
+                        if(v instanceof Enemy === true){
+                            // 99999999は仮のMAX
+                            console.log('aa');
+                            Game_score = Math.min(Game_score + v.score, 99999999);
+                        }
+                    }
+
                     this.life = 0;
                 }
             })
@@ -198,10 +211,16 @@ class Enemy extends Entity{
         super(ctx, x, y, width, height, hitbox, 0);
         this.type       = 'default';
         this.frame      = 0;
-        this.speed_dpf  = 1.5;
         this.shot_array = null;
         this.angle      = 1.5 * Math.PI;
-        this.collision_attack = 1;
+        this.collision_attack = 3;
+
+        switch(this.type){
+            case 'default' :
+            default:
+            this.speed_dpf  = 1.5;
+            this.score = 100;
+        }
     }
     set(x, y, life = 1, type = 'default'){
         this.position.set(x,y);
@@ -247,6 +266,9 @@ class Enemy extends Entity{
                 if(dist <= (this.hitbox + v.hitbox) / 4){
                     v.life -= this.collision_attack;
                     v.collision_check_counter_f = -v.collision_time_f;
+                    if(v.life <= 0){
+                        v.life = 0;
+                    }
                 }
             })
         }
@@ -254,8 +276,4 @@ class Enemy extends Entity{
         this.rotationDraw();
         this.frame++;
     }
-}
-
-class InfoBoard extends Entity{
-
 }
