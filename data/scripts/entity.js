@@ -103,8 +103,8 @@ class Player extends Entity{
         this.shot_array = null;  // ショットの弾１つ１つは配列に割り当てられる
         this.shot_check_counter_f = 0;
         this.shot_cool_time_f = 10;
-        this.invincible_check_counter_f = 0;
-        this.invincible_time_f = 60;
+        this.collision_check_counter_f = 0;
+        this.collision_time_f = 60;
     }
 
     setShotArray(shot_array){
@@ -144,7 +144,7 @@ class Player extends Entity{
             }
         }
         this.shot_check_counter_f++;
-        this.invincible_check_counter_f++;
+        this.collision_check_counter_f++;
 
     }
 }
@@ -198,7 +198,7 @@ class Enemy extends Entity{
         super(ctx, x, y, width, height, hitbox, 0);
         this.type       = 'default';
         this.frame      = 0;
-        this.speed_dpf  = 1;
+        this.speed_dpf  = 1.5;
         this.shot_array = null;
         this.angle      = 1.5 * Math.PI;
         this.collision_attack = 1;
@@ -242,11 +242,11 @@ class Enemy extends Entity{
 
         if(this.hitbox_target_array != null){
             this.hitbox_target_array.map((v) => {
-                if(this.life <= 0 || v.life <= 0 || v.invincible_check_counter_f < 0){return;}
+                if(this.life <= 0 || v.life <= 0 || v.collision_check_counter_f < 0){return;}
                 let dist = this.position.distance(v.position);
                 if(dist <= (this.hitbox + v.hitbox) / 4){
                     v.life -= this.collision_attack;
-                    v.invincible_check_counter_f = -v.invincible_time_f;
+                    v.collision_check_counter_f = -v.collision_time_f;
                 }
             })
         }
@@ -254,4 +254,8 @@ class Enemy extends Entity{
         this.rotationDraw();
         this.frame++;
     }
+}
+
+class InfoBoard extends Entity{
+
 }

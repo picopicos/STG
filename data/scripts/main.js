@@ -7,9 +7,9 @@
 /* 変数定義 */
 window.Is_key_down         = {};
 
-const CANVAS_WIDTH         = 960;
+const CANVAS_WIDTH         = 640;
 const CANVAS_HEIGHT        = 720;
-const STAGE_WIDTH          = 960;
+const STAGE_WIDTH          = 640;
 const STAGE_HEIGHT         = 720;
 
 let util                   = null;
@@ -107,6 +107,7 @@ function setEventSetting(){
 
 /* シーン管理 */
 function setSceneSetting(){
+    let enemy_counter = 5;
     scene.add('intro', (time) => {
         if(time > 2.0){
             scene.use('invade');
@@ -119,14 +120,43 @@ function setSceneSetting(){
                 if(enemy_array[i].life <= 0){
                     enemy_array[i].setDirectionVector(0.0, 1.0);
                     enemy_array[i].set(CANVAS_WIDTH / 4, -enemy_array[i].height, 2, 'default');
+                    enemy_counter--;
                     break;
                 }
             }
         }
 
-        // 経過後,シーンを再利用する
-        if(scene.run_frame === 180){
+        if(enemy_counter <= 0){
+            if(scene.run_frame === 600){
+                enemy_counter = 5;
+                scene.use('invade2');
+            }
+        } else if(scene.run_frame === 90){
             scene.use('invade');
+        }
+
+    })
+
+    scene.add('invade2', (time) => {
+        // enemy_counterは一時的な変数なので、もっといいやり方があるかもしれない。
+        if(scene.run_frame === 0){
+            for(let i = 0; i < ENEMY_MAX_COUNT; ++i){
+                if(enemy_array[i].life <= 0){
+                    enemy_array[i].setDirectionVector(0.0, 1.0);
+                    enemy_array[i].set(CANVAS_WIDTH / 4 * 3, -enemy_array[i].height, 2, 'default');
+                    enemy_counter--;
+                    break;
+                }
+            }
+        }
+
+        if(enemy_counter <= 0){
+            if(scene.run_frame === 600){
+                enemy_counter = 5;
+                scene.use('invade');
+            }
+        } else if(scene.run_frame === 90){
+            scene.use('invade2');
         }
     })
 
