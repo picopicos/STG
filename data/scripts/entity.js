@@ -55,6 +55,12 @@ class Entity{
         }
     }
 
+    setHitboxTargets(targets){
+        if(targets != null && Array.isArray(targets) === true && targets.length > 0){
+            this.hitbox_target_array = targets;
+        }
+    }
+
     // 画像の一括参照用
     setImage(image_path){
         this.image.src = image_path;
@@ -159,12 +165,6 @@ class Shot extends Entity{
         }
     }
 
-    setHitboxTargets(targets){
-        if(targets != null && Array.isArray(targets) === true && targets.length > 0){
-            this.hitbox_target_array = targets;
-        }
-    }
-
     update(){
         if(this.life <= 0){return;}
         if(this.position.y + this.height < 0 || this.position.y - this.height > this.ctx.canvas.height){
@@ -175,14 +175,16 @@ class Shot extends Entity{
         this.position.y += this.direction_vector.y * this.speed_dpf;
 
         // 当たり判定処理
-        this.hitbox_target_array.map((v) => {
-            if(this.life <= 0 || v.life <= 0){return;}
-            let dist = this.position.distance(v.position);
-            if(dist <= (this.hitbox + v.hitbox) / 4){
-                v.life -= this.attack;
-                this.life = 0;
-            }
-        })
+        if(this.hitbox_target_array != null){
+            this.hitbox_target_array.map((v) => {
+                if(this.life <= 0 || v.life <= 0){return;}
+                let dist = this.position.distance(v.position);
+                if(dist <= (this.hitbox + v.hitbox) / 4){
+                    v.life -= this.attack;
+                    this.life = 0;
+                }
+            })
+        }
 
         this.rotationDraw();
     }
@@ -196,6 +198,7 @@ class Enemy extends Entity{
         this.speed_dpf  = 1;
         this.shot_array = null;
         this.angle      = 1.5 * Math.PI;
+        this.collision_attack = 1;
     }
     set(x, y, life = 1, type = 'default'){
         this.position.set(x,y);
@@ -233,6 +236,17 @@ class Enemy extends Entity{
             }
             break;
         }
+
+        if(this.hitbox_target_array != null){
+            this.hitbox_target_array.map((v) => {
+                if(this.life <= 0 || v.life <= 0){return;}
+                let dist = this.position.distance(v.position);
+                if(dist <= (this.hitbox + v.hitbox) / 4){
+                    v.life -= this.collision_attack;
+                }
+            })
+        }
+
         this.rotationDraw();
         this.frame++;
     }

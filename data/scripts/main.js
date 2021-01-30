@@ -67,6 +67,7 @@ function load(){
         enemy_array[i].setImage('./assets/img/enemy.png');
         // enemy_shot_arrayは敵の種類に関わらず同じものを利用する
         enemy_array[i].setShotArray(enemy_shot_array);
+        enemy_array[i].setHitboxTargets([player]);  // 引数は配列なので注意
     }
     for(let i = 0; i < SHOT_MAX_COUNT; i++){
         shot_array[i].setHitboxTargets(enemy_array);
