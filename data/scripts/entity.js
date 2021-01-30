@@ -18,7 +18,7 @@ class Position{
 }
 
 class Entity{
-    constructor(ctx, x, y, width, height, life){
+    constructor(ctx, x, y, width, height, hitbox = width, life = 0){
         this.ctx       = ctx;
         this.image     = new Image();
         this.image.src = null;
@@ -29,12 +29,13 @@ class Entity{
 
         this.width     = width;
         this.height    = height;
+        this.hitbox    = hitbox;
         this.position  = new Position(x,y);
         this.direction_vector = new Position(0.0, -1.0);
         this.angle     = 0.5 * Math.PI;  // 右を0ラジアンとする。
 
         this.speed_dpf = 1.5;
-        this.life      = life;  // エンティティの生存フラグ(0で削除、1以上で出現)
+        this.life      = life;           // エンティティの生存フラグ(0で削除、1以上で出現)
     }
 
     setDirectionVector(x, y){
@@ -51,6 +52,12 @@ class Entity{
     setSpeed(speed_dpf){
         if(speed_dpf != null && speed_dpf > 0){
             this.speed_dpf = speed_dpf;
+        }
+    }
+
+    setHitboxTargets(targets){
+        if(targets != null && Array.isArray(targets) === true && targets.length > 0){
+            this.hitbox_target_array = targets;
         }
     }
 
@@ -89,13 +96,15 @@ class Entity{
 }
 
 class Player extends Entity{
-    constructor(ctx, x, y, width, height, life){
-        super(ctx, x, y, width, height, 0);
+    constructor(ctx, x, y, width, height, hitbox = width, life = 0){
+        super(ctx, x, y, width, height, hitbox, life);
         this.position.set(this.ctx.stage_width / 2, this.ctx.stage_height - 2 * height)
 
         this.shot_array = null;  // ショットの弾１つ１つは配列に割り当てられる
-        this.shot_check_counter = 0;
-        this.shot_cool_time = 10;
+        this.shot_check_counter_f = 0;
+        this.shot_cool_time_f = 10;
+        this.invincible_check_counter_f = 0;
+        this.invincible_time_f = 60;
     }
 
     setShotArray(shot_array){
@@ -103,6 +112,7 @@ class Player extends Entity{
     }
 
     update(){
+        if(this.life <= 0){return;}
         if(window.Is_key_down.key_ArrowLeft === true){
             this.position.x -= this.speed_dpf;
         }
@@ -123,27 +133,28 @@ class Player extends Entity{
 
         // 生成可能なショット(最大数＆クールタイム条件)を走査し１つずつ生成する
         if(window.Is_key_down.key_z === true){
-            if(this.shot_check_counter >= 0){
+            if(this.shot_check_counter_f >= 0){
                 for(let i = 0; i < this.shot_array.length; i++){
                     if(this.shot_array[i].life <= 0){
                         this.shot_array[i].set(this.position.x, this.position.y);
-                        this.shot_check_counter = -this.shot_cool_time;
+                        this.shot_check_counter_f = -this.shot_cool_time_f;
                         break;
                     }
                 }
             }
         }
-        this.shot_check_counter++;
+        this.shot_check_counter_f++;
+        this.invincible_check_counter_f++;
 
     }
 }
 
 class Shot extends Entity{
-    constructor(ctx, x, y, width, height){
-        super(ctx, x, y, width, height, 0);
+    constructor(ctx, x, y, width, height, hitbox){
+        super(ctx, x, y, width, height, hitbox, 0);
         this.speed_dpf    = 10;
         this.attack       = 1;
-        this.target_array = []; // 衝突判定の対象(Characterクラス)
+        this.hitbox_target_array = []; // 衝突判定の対象(Characterクラス)
     }
 
     set(x, y){
@@ -157,12 +168,6 @@ class Shot extends Entity{
         }
     }
 
-    setTargets(targets){
-        if(targets != null && Array.isArray(targets) === true && targets.length > 0){
-            this.target_array = targets;
-        }
-    }
-
     update(){
         if(this.life <= 0){return;}
         if(this.position.y + this.height < 0 || this.position.y - this.height > this.ctx.canvas.height){
@@ -172,27 +177,31 @@ class Shot extends Entity{
         this.position.x += this.direction_vector.x * this.speed_dpf;
         this.position.y += this.direction_vector.y * this.speed_dpf;
 
-        this.target_array.map((v) => {
-            if(this.life <= 0 || v.life <= 0){return;}
-            let dist = this.position.distance(v.position);
-            if(dist <= (this.width + v.width) / 4){
-                v.life -= this.attack;
-                this.life = 0;
-            }
-        })
+        // 当たり判定処理
+        if(this.hitbox_target_array != null){
+            this.hitbox_target_array.map((v) => {
+                if(this.life <= 0 || v.life <= 0){return;}
+                let dist = this.position.distance(v.position);
+                if(dist <= (this.hitbox + v.hitbox) / 4){
+                    v.life -= this.attack;
+                    this.life = 0;
+                }
+            })
+        }
 
         this.rotationDraw();
     }
 }
 
 class Enemy extends Entity{
-    constructor(ctx, x, y, width, height){
-        super(ctx, x, y, width, height, 0);
+    constructor(ctx, x, y, width, height, hitbox){
+        super(ctx, x, y, width, height, hitbox, 0);
         this.type       = 'default';
         this.frame      = 0;
         this.speed_dpf  = 1;
         this.shot_array = null;
         this.angle      = 1.5 * Math.PI;
+        this.collision_attack = 1;
     }
     set(x, y, life = 1, type = 'default'){
         this.position.set(x,y);
@@ -230,6 +239,18 @@ class Enemy extends Entity{
             }
             break;
         }
+
+        if(this.hitbox_target_array != null){
+            this.hitbox_target_array.map((v) => {
+                if(this.life <= 0 || v.life <= 0 || v.invincible_check_counter_f < 0){return;}
+                let dist = this.position.distance(v.position);
+                if(dist <= (this.hitbox + v.hitbox) / 4){
+                    v.life -= this.collision_attack;
+                    v.invincible_check_counter_f = -v.invincible_time_f;
+                }
+            })
+        }
+
         this.rotationDraw();
         this.frame++;
     }
