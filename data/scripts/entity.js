@@ -18,7 +18,7 @@ class Position{
 }
 
 class Entity{
-    constructor(ctx, x, y, width, height, hitbox = width, life){
+    constructor(ctx, x, y, width, height, hitbox = width, life = 0){
         this.ctx       = ctx;
         this.image     = new Image();
         this.image.src = null;
@@ -35,7 +35,7 @@ class Entity{
         this.angle     = 0.5 * Math.PI;  // 右を0ラジアンとする。
 
         this.speed_dpf = 1.5;
-        this.life      = life;  // エンティティの生存フラグ(0で削除、1以上で出現)
+        this.life      = life;           // エンティティの生存フラグ(0で削除、1以上で出現)
     }
 
     setDirectionVector(x, y){
@@ -90,8 +90,8 @@ class Entity{
 }
 
 class Player extends Entity{
-    constructor(ctx, x, y, width, height, hitbox, life){
-        super(ctx, x, y, width, height, hitbox, 0);
+    constructor(ctx, x, y, width, height, hitbox = width, life = 0){
+        super(ctx, x, y, width, height, hitbox, life);
         this.position.set(this.ctx.stage_width / 2, this.ctx.stage_height - 2 * height)
 
         this.shot_array = null;  // ショットの弾１つ１つは配列に割り当てられる
@@ -104,6 +104,7 @@ class Player extends Entity{
     }
 
     update(){
+        if(this.life <= 0){return;}
         if(window.Is_key_down.key_ArrowLeft === true){
             this.position.x -= this.speed_dpf;
         }
@@ -173,6 +174,7 @@ class Shot extends Entity{
         this.position.x += this.direction_vector.x * this.speed_dpf;
         this.position.y += this.direction_vector.y * this.speed_dpf;
 
+        // 当たり判定処理
         this.hitbox_target_array.map((v) => {
             if(this.life <= 0 || v.life <= 0){return;}
             let dist = this.position.distance(v.position);

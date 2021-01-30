@@ -51,7 +51,7 @@ function initialize(){
 function load(){
     let ready = true;
 
-    player = new Player(ctx, 0, 0, 64, 64);
+    player = new Player(ctx, 0, 0, 64, 64, 64, 1);
     for(let i = 0; i < SHOT_MAX_COUNT; i++){
         shot_array[i] = new Shot(ctx, 0, 0, 32, 32);
         shot_array[i].setImage('./assets/img/shot_lv1.png');
@@ -60,6 +60,7 @@ function load(){
     for(let i = 0; i < ENEMY_SHOT_MAX_COUNT; i++){
         enemy_shot_array[i] = new Shot(ctx, 0, 0, 14, 14);
         enemy_shot_array[i].setImage('./assets/img/enemy_shot.png');
+        enemy_shot_array[i].setHitboxTargets([player]);  // 引数は配列なので注意
     }
     for(let i = 0; i < ENEMY_MAX_COUNT; i++){
         enemy_array[i] = new Enemy(ctx, 0, 0, 64, 64);
